@@ -8,9 +8,10 @@ from django.urls import reverse
 
 from posts.models import Follow, Group, Post, User
 from yatube import settings
-from yatube.settings import BASE_DIR, MEDIA_ROOT
+from yatube.settings import MEDIA_ROOT
 
 MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
+
 
 @override_settings(MEDIA_ROOT=MEDIA_ROOT)
 class YatubeFormTests(TestCase):
@@ -107,14 +108,15 @@ class YatubeFormTests(TestCase):
     def test_authorized_user_can_unfollow(self):
         """Авторизированный пользователь может отписаться"""
         Follow.objects.create(
-            user= self.user,
-            author= self.user_2
+            user=self.user,
+            author=self.user_2
         )
         follow = Follow.objects.count()
         response = self.authorized_client.post(reverse(
-            'posts:profile_unfollow', kwargs={'username': self.user_2.username}),
+            'posts:profile_unfollow',
+            kwargs={'username': self.user_2.username}),
             follow=True
-        )        
+        )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Follow.objects.count(), follow - 1)
 
@@ -138,5 +140,4 @@ class YatubeFormTests(TestCase):
         self.assertFormError(response, 'form', 'image', errors=[
             'Загрузите правильное изображение. Файл, '
             'который вы загрузили, поврежден или не является изображением.'
-            ]
-        )
+        ])

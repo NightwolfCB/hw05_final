@@ -1,5 +1,5 @@
 from django.core.cache import cache
-from django.test import Client, TestCase, override_settings
+from django.test import Client, TestCase
 from django.urls import reverse
 
 from posts.models import Post, User

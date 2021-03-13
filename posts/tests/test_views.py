@@ -190,7 +190,8 @@ class YatubeViewTests(TestCase):
         response = self.authorized_client.get(
             reverse('posts:post', kwargs={'username': self.user.username,
                                           'post_id': self.post.id}))
-        self.assertEqual(response.context.get('comments')[0].text, 'Три Два Раз')
+        self.assertEqual(response.context.get('comments')[0].text,
+            'Три Два Раз')
 
     def test_anonymous_unable_to_comment(self):
         """Неавторизированный пользователь не может комментировать посты"""
@@ -206,12 +207,12 @@ class YatubeViewTests(TestCase):
     def test_follow_index_page_show_correct_context(self):
         """Шаблон ленты новостей сформирован с правильным контекстом"""
         Follow.objects.create(
-            user= self.user,
-            author= self.user_2
+            user=self.user,
+            author=self.user_2
         )
         Follow.objects.create(
-            user= self.user_3,
-            author= self.user_4
+            user=self.user_3,
+            author=self.user_4
         )
         post_new_1 = Post.objects.create(
             author=self.user_2,
@@ -224,7 +225,8 @@ class YatubeViewTests(TestCase):
             group=self.group
         )
         response_1 = self.authorized_client.get(reverse('posts:follow_index'))
-        response_2 = self.authorized_client_3.get(reverse('posts:follow_index'))
+        response_2 = self.authorized_client_3.get(
+            reverse('posts:follow_index'))
         post_new_text_1 = response_1.context.get('page')[0].text
         post_new_text_2 = response_2.context.get('page')[0].text
         self.assertEqual(post_new_text_1, post_new_1.text)
