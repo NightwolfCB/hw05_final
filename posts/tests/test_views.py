@@ -4,7 +4,6 @@ import tempfile
 from django import forms
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.shortcuts import get_object_or_404
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
@@ -12,6 +11,7 @@ from posts.models import Follow, Group, Post, User
 from yatube.settings import BASE_DIR, MEDIA_ROOT
 
 MEDIA_ROOT = tempfile.mkdtemp(dir=BASE_DIR)
+
 
 @override_settings(MEDIA_ROOT=MEDIA_ROOT)
 class YatubeViewTests(TestCase):
@@ -64,7 +64,7 @@ class YatubeViewTests(TestCase):
         self.authorized_client_4.force_login(self.user_3)
 
     def test_pages_uses_correct_template(self):
-        """URL-адрес использует соответствующий шаблон."""
+        """URL-адрес использует соответствующий шаблон"""
         templates_pages_names = {
             'index.html': reverse('posts:index'),
             'new.html': reverse('posts:new_post'),
@@ -98,7 +98,7 @@ class YatubeViewTests(TestCase):
         self.assertEqual(post_image_0, self.post.image)
 
     def test_group_pages_show_correct_context(self):
-        """Шаблон group сформирован с правильным контекстом."""
+        """Шаблон group сформирован с правильным контекстом"""
         response = self.authorized_client.get(
             reverse('posts:group', kwargs={'slug': self.group.slug})
         )
@@ -106,10 +106,11 @@ class YatubeViewTests(TestCase):
         self.assertEqual(response.context.get('group').description,
                          self.group.description)
         self.assertEqual(response.context.get('group').slug, self.group.slug)
-        self.assertEqual(response.context.get('page')[0].image, self.post.image)
+        self.assertEqual(response.context.get('page')[0].image,
+                         self.post.image)
 
     def test_new_post_page_show_correct_context(self):
-        """Шаблон new_post сформирован с правильным контекстом."""
+        """Шаблон new_post сформирован с правильным контекстом"""
         response = self.authorized_client.get(reverse('posts:new_post'))
         form_fields = {
             'text': forms.fields.CharField,
@@ -203,7 +204,7 @@ class YatubeViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_follow_index_page_show_correct_context(self):
-        """Шаблон ленты новостей показывает новые записи пользователей из их подписок"""
+        """Шаблон ленты новостей сформирован с правильным контекстом"""
         Follow.objects.create(
             user= self.user,
             author= self.user_2
