@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Записи сообщества {{ group.title }}{% endblock %} 
+{% block header %}<h1 align="center"><font color="blue"><b>{{ group.title }}</b></font></h1>{% endblock %} 
+{% block content %}
+    <p align="center" style="margin-bottom:60px">{{ group.description }}</p>      
+    {% for post in posts %}
+    <h3> 
+        Автор: {{ post.author.get_full_name }}, дата публикации: {{ post.pub_date|date:"d M Y" }} 
+    </h3> 
+    <p>{% include "post_item.html" with post=post %}</p> 
+    {% endfor %} 
+{% endblock %} 

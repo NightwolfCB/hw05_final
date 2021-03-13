@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}
+{% if post %}
+Редактор записи
+{% else %}
+Новая запись
+{% endif %}
+{% endblock %}
+{% block content %}
+{% load user_filters %}
+<div class="row justify-content-center">
+    <div class="col-md-8 p-5">
+        <div class="card">
+            <div class="card-header">
+                {% if post %}
+                Редактор записи
+                {% else %}
+                Новая запись
+                {% endif %}
+            </div>
+            <div class="card-body">
+
+              {% for error in form.errors %}
+                  <div class="alert alert-danger" role="alert">
+                      {{ error|escape }}
+                  </div>
+                {% endfor %}
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.group }}<br>
+                    {{ form.text }}<br>
+                    {{ form.image }}<br>
+                    {% if field.help_text %}
+                    <small id="{{ field.id_for_label }}-help" class="form-text text-muted" style="margin-top:10px">{{ field.help_text|safe }}</small>
+                    {% endif %}
+
+                    <button type="submit" class="btn btn-primary" style="margin-top:16px">
+                        {% if post %}
+                        Сохранить
+                        {% else %}
+                        Добавить
+                        {% endif %}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% if user.is_authenticated %} 
+<div class="row">
+    <ul class="nav nav-tabs" style="margin-bottom:15px">
+        <li class="nav-item">
+            <a class="nav-link {% if index %}active{% endif %}" href="{% url 'posts:index' %}">
+                  Все авторы
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if follow %}active{% endif %}" href="{% url 'posts:follow_index' %}">
+                Ваши подписки
+            </a>
+        </li>
+    </ul>
+</div>
+{% endif %}
