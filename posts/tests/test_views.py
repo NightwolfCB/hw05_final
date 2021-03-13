@@ -191,7 +191,7 @@ class YatubeViewTests(TestCase):
             reverse('posts:post', kwargs={'username': self.user.username,
                                           'post_id': self.post.id}))
         self.assertEqual(response.context.get('comments')[0].text,
-            'Три Два Раз')
+                         'Три Два Раз')
 
     def test_anonymous_unable_to_comment(self):
         """Неавторизированный пользователь не может комментировать посты"""

@@ -50,7 +50,8 @@ class YatubeURLTest(TestCase):
             'new.html': '/new/',
             'posts/post.html': f'/{self.user.username}/{self.post.id}/',
             'posts/profile.html': f'/{self.user.username}/',
-            'posts/post_edit.html': f'/{self.user.username}/{self.post.id}/edit/'
+            'posts/post_edit.html': f'/{self.user.username}/'
+                                    f'{self.post.id}/edit/'
         }
         for template, reverse_name in templates_url_names.items():
             with self.subTest():
@@ -89,7 +90,7 @@ class YatubeURLTest(TestCase):
                                               f'{self.post.id}/edit/')
         self.assertEqual(response.status_code, 200)
 
-    def test_username_post_id_edit_not_author_url_exists_at_desired_location(self):
+    def test_post_edit_page_guest_url_exists_at_desired_location(self):
         """Страница /username/post_id/edit/ доступна только автору поста.
         Авторизированного пользователя, но не автора поста, перенаправит на
         страницу просмотра этой записи"""
