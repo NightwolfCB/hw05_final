@@ -95,7 +95,7 @@ class YatubeFormTests(TestCase):
             text='Измененный текст').exists())
         self.assertRedirects(response, reverse('posts:post', kwargs=kwargs))
         self.assertEqual(response.status_code, 200)
-    
+        
     def test_upload_wrong_format_file(self):
         """Проверка формата загружаемого файла изображения"""
         not_image = SimpleUploadedFile(
