@@ -205,7 +205,7 @@ class YatubeViewTests(TestCase):
     def test_unauthorized_user_can_follow(self):
         """Неавторизированный пользователь не может подписаться"""
         follow = Follow.objects.count()
-        response = self.guest_client.post(reverse(
+        self.guest_client.post(reverse(
             'posts:profile_follow',
             kwargs={'username': self.user.username}),
             follow=True
@@ -216,7 +216,7 @@ class YatubeViewTests(TestCase):
     def test_unauthorized_user_can_unfollow(self):
         """Неавторизированный пользователь не может отписаться"""
         follow = Follow.objects.count()
-        response = self.guest_client.post(reverse(
+        self.guest_client.post(reverse(
             'posts:profile_unfollow',
             kwargs={'username': self.user.username}),
             follow=True
@@ -257,11 +257,11 @@ class YatubeViewTests(TestCase):
         Follow.objects.filter(author=self.user, user=self.user_2).delete()
         Follow.objects.filter(author=self.user_3, user=self.user_4).delete()
         Post.objects.filter(author=self.user_2,
-            text='Романтик коллекшн',
-            group=self.group).delete()
+                            text='Романтик коллекшн',
+                            group=self.group).delete()
         Post.objects.filter(author=self.user_4,
-            text='Романс за пацана',
-            group=self.group).delete()
+                            text='Романс за пацана',
+                            group=self.group).delete()
 
     def test_comment_create(self):
         """Авторизированный пользователь может комментировать посты"""
