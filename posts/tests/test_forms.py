@@ -31,6 +31,7 @@ class YatubeFormTests(TestCase):
         super().tearDownClass()
 
     def setUp(self):
+        self.guest_client = Client()
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
 
@@ -72,7 +73,7 @@ class YatubeFormTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_edit_post(self):
-        """При редактировании поста, изменяется запись в базе данных."""
+        """При редактировании поста, изменяется запись в базе данных"""
         form_data = {
             'text': 'Измененный текст',
             'group': self.group.id,
@@ -94,32 +95,7 @@ class YatubeFormTests(TestCase):
             text='Измененный текст').exists())
         self.assertRedirects(response, reverse('posts:post', kwargs=kwargs))
         self.assertEqual(response.status_code, 200)
-
-    def test_authorized_user_can_follow(self):
-        """Авторизированный пользователь может подписаться"""
-        follow = Follow.objects.count()
-        response = self.authorized_client.post(reverse(
-            'posts:profile_follow', kwargs={'username': self.user_2.username}),
-            follow=True
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(Follow.objects.count(), follow + 1)
-
-    def test_authorized_user_can_unfollow(self):
-        """Авторизированный пользователь может отписаться"""
-        Follow.objects.create(
-            user=self.user,
-            author=self.user_2
-        )
-        follow = Follow.objects.count()
-        response = self.authorized_client.post(reverse(
-            'posts:profile_unfollow',
-            kwargs={'username': self.user_2.username}),
-            follow=True
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(Follow.objects.count(), follow - 1)
-
+    
     def test_upload_wrong_format_file(self):
         """Проверка формата загружаемого файла изображения"""
         not_image = SimpleUploadedFile(

@@ -175,35 +175,55 @@ class YatubeViewTests(TestCase):
         self.assertEqual(post_text, self.post.text)
         self.assertEqual(post_author.username, self.user.username)
         self.assertEqual(post_image_0, self.post.image)
+    
+    def test_authorized_user_can_follow(self):
+        """Авторизированный пользователь может подписаться"""
+        follow = Follow.objects.count()
+        response = self.authorized_client.post(reverse(
+            'posts:profile_follow', kwargs={'username': self.user_2.username}),
+            follow=True
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Follow.objects.count(), follow + 1)
+        Follow.objects.filter(author=self.user, user=self.user_2).delete()
 
-    def test_comment_create(self):
-        """Авторизированный пользователь может комментировать посты"""
-        comments = {
-            'post': self.post,
-            'author': self.user,
-            'text': 'Три Два Раз'
-        }
-        self.authorized_client.post(reverse('posts:add_comment',
-                                    kwargs={'username': self.user.username,
-                                            'post_id': self.post.id}),
-                                    data=comments)
-        response = self.authorized_client.get(
-            reverse('posts:post', kwargs={'username': self.user.username,
-                                          'post_id': self.post.id}))
-        self.assertEqual(response.context.get('comments')[0].text,
-                         'Три Два Раз')
+    def test_authorized_user_can_unfollow(self):
+        """Авторизированный пользователь может отписаться"""
+        Follow.objects.create(
+            user=self.user,
+            author=self.user_2
+        )
+        follow = Follow.objects.count()
+        response = self.authorized_client.post(reverse(
+            'posts:profile_unfollow',
+            kwargs={'username': self.user_2.username}),
+            follow=True
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Follow.objects.count(), follow - 1)
 
-    def test_anonymous_unable_to_comment(self):
-        """Неавторизированный пользователь не может комментировать посты"""
-        comment = {'post': self.post,
-                   'author': self.user,
-                   'text': 'Раз Два Три'}
-        response = self.guest_client.post(
-            reverse('posts:add_comment',
-                    kwargs={'username': self.user.username,
-                            'post_id': self.post.id}), data=comment)
-        self.assertEqual(response.status_code, 302)
+    def test_unauthorized_user_can_follow(self):
+        """Неавторизированный пользователь не может подписаться"""
+        follow = Follow.objects.count()
+        response = self.guest_client.post(reverse(
+            'posts:profile_follow',
+            kwargs={'username': self.user.username}),
+            follow=True
+        )
+        self.assertEqual(Follow.objects.count(), 0)
+        self.assertEqual(Follow.objects.count(), follow)
 
+    def test_unauthorized_user_can_unfollow(self):
+        """Неавторизированный пользователь не может отписаться"""
+        follow = Follow.objects.count()
+        response = self.guest_client.post(reverse(
+            'posts:profile_unfollow',
+            kwargs={'username': self.user.username}),
+            follow=True
+        )
+        self.assertEqual(Follow.objects.count(), 0)
+        self.assertEqual(Follow.objects.count(), follow)
+    
     def test_follow_index_page_show_correct_context(self):
         """Шаблон ленты новостей сформирован с правильным контекстом"""
         Follow.objects.create(
@@ -234,3 +254,39 @@ class YatubeViewTests(TestCase):
         self.assertNotEqual(post_new_text_1, post_new_2.text)
         self.assertNotEqual(post_new_text_2, post_new_1.text)
         self.assertNotEqual(post_new_text_1, post_new_text_2)
+        Follow.objects.filter(author=self.user, user=self.user_2).delete()
+        Follow.objects.filter(author=self.user_3, user=self.user_4).delete()
+        Post.objects.filter(author=self.user_2,
+            text='Романтик коллекшн',
+            group=self.group).delete()
+        Post.objects.filter(author=self.user_4,
+            text='Романс за пацана',
+            group=self.group).delete()
+
+    def test_comment_create(self):
+        """Авторизированный пользователь может комментировать посты"""
+        comments = {
+            'post': self.post,
+            'author': self.user,
+            'text': 'Три Два Раз'
+        }
+        self.authorized_client.post(reverse('posts:add_comment',
+                                    kwargs={'username': self.user.username,
+                                            'post_id': self.post.id}),
+                                    data=comments)
+        response = self.authorized_client.get(
+            reverse('posts:post', kwargs={'username': self.user.username,
+                                          'post_id': self.post.id}))
+        self.assertEqual(response.context.get('comments')[0].text,
+                         'Три Два Раз')
+
+    def test_anonymous_unable_to_comment(self):
+        """Неавторизированный пользователь не может комментировать посты"""
+        comment = {'post': self.post,
+                   'author': self.user,
+                   'text': 'Раз Два Три'}
+        response = self.guest_client.post(
+            reverse('posts:add_comment',
+                    kwargs={'username': self.user.username,
+                            'post_id': self.post.id}), data=comment)
+        self.assertEqual(response.status_code, 302)
