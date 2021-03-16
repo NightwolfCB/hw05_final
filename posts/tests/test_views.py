@@ -175,7 +175,7 @@ class YatubeViewTests(TestCase):
         self.assertEqual(post_text, self.post.text)
         self.assertEqual(post_author.username, self.user.username)
         self.assertEqual(post_image_0, self.post.image)
-        
+
     def test_authorized_user_can_follow(self):
         """Авторизированный пользователь может подписаться"""
         follow = Follow.objects.count()
@@ -223,7 +223,7 @@ class YatubeViewTests(TestCase):
         )
         self.assertEqual(Follow.objects.count(), 0)
         self.assertEqual(Follow.objects.count(), follow)
-        
+
     def test_follow_index_page_show_correct_context(self):
         """Шаблон ленты новостей сформирован с правильным контекстом"""
         Follow.objects.create(
